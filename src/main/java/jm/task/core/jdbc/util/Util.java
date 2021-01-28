@@ -1,21 +1,47 @@
 package jm.task.core.jdbc.util;
 
-import java.lang.reflect.InvocationTargetException;
+import jm.task.core.jdbc.model.User;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.Properties;
 
 public class Util {
-    private static final String url = "jdbc:mysql://localhost:3306/pp_db?useSSL=false";
-    private static final String user = "admin";
-    private static final String password = "admin";
-    private static final String jdbcDriver = "com.mysql.cj.jdbc.Driver";
+    public static SessionFactory getSessionFactory() {
+        Configuration cfg = new Configuration();
+        Properties properties = new Properties();
+
+        properties.setProperty(Environment.DIALECT, "org.hibernate.dialect.MySQLDialect");
+        properties.setProperty(Environment.HBM2DDL_AUTO,"update");
+        properties.setProperty(Environment.DRIVER, "com.mysql.cj.jdbc.Driver");
+        properties.setProperty(Environment.USER, "admin");
+        properties.setProperty(Environment.PASS, "admin");
+        properties.setProperty(Environment.URL, "jdbc:mysql://localhost:3306/pp_db?useSSL=false");
+        properties.setProperty(Environment.SHOW_SQL, "true");
+        properties.setProperty(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
+        properties.setProperty(Environment.USE_NEW_ID_GENERATOR_MAPPINGS, "jm.task.core.jdbc.model.User");
+
+        cfg.addProperties(properties).addAnnotatedClass(User.class);
+
+        StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder().applySettings(cfg.getProperties());
+
+        return cfg.buildSessionFactory(builder.build());
+    }
 
     public static Connection getConnection() {
         Connection connection = null;
+        String url = "jdbc:mysql://localhost:3306/pp_db?useSSL=false";
+        String user = "admin";
+        String password = "admin";
+        String jdbcDriver = "com.mysql.cj.jdbc.Driver";
+
         try {
-            Class.forName(jdbcDriver).getDeclaredConstructor().newInstance();
+            Class.forName(jdbcDriver);
             connection = DriverManager.getConnection(url, user, password);
         } catch (SQLException e) {
             System.out.println("Problem with connection creation...\n" + e);
@@ -23,16 +49,5 @@ public class Util {
             e.printStackTrace();
         }
         return connection;
-    }
-
-    public static Statement getStatement() {
-        Statement statement = null;
-
-        try {
-            statement = Util.getConnection().createStatement();
-        } catch (SQLException e) {
-            System.out.println("Problem with statement creation...\n" + e);
-        }
-        return statement;
     }
 }
