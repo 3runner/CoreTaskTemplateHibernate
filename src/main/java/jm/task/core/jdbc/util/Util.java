@@ -22,7 +22,7 @@ public class Util {
         properties.setProperty(Environment.USER, "admin");
         properties.setProperty(Environment.PASS, "admin");
         properties.setProperty(Environment.URL, "jdbc:mysql://localhost:3306/pp_db?useSSL=false");
-        properties.setProperty(Environment.SHOW_SQL, "true");
+        properties.setProperty(Environment.SHOW_SQL, "false");
         properties.setProperty(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
         properties.setProperty(Environment.USE_NEW_ID_GENERATOR_MAPPINGS, "jm.task.core.jdbc.model.User");
 

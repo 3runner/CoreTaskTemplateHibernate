@@ -6,8 +6,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
@@ -18,25 +16,43 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void createUsersTable() {
-        try (Statement statement = Util.getConnection().createStatement()) {
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS User (" +
+        Session session = null;
+        try {
+            session = Util.getSessionFactory().openSession();
+            Transaction tr = session.beginTransaction();
+            Query query = session.createSQLQuery("CREATE TABLE IF NOT EXISTS User (" +
                     "  id BIGINT NOT NULL AUTO_INCREMENT," +
                     "  name VARCHAR(45) NOT NULL," +
                     "  lastName VARCHAR(45) NOT NULL," +
                     "  age INT(3) NOT NULL," +
                     "  PRIMARY KEY (id)," +
                     "  UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);");
-        } catch (SQLException e) {
+            query.executeUpdate();
+            tr.commit();
+        } catch (Exception e) {
             System.out.println("Table creation is failed...\n" + e);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
     }
 
     @Override
     public void dropUsersTable() {
-        try (Statement statement = Util.getConnection().createStatement()) {
-            statement.executeUpdate("DROP TABLE IF EXISTS User;");
-        } catch (SQLException e) {
+        Session session = null;
+        try {
+            session = Util.getSessionFactory().openSession();
+            Transaction tr = session.beginTransaction();
+            Query query = session.createSQLQuery("DROP TABLE IF EXISTS User;");
+            query.executeUpdate();
+            tr.commit();
+        } catch (Exception e) {
             System.out.println("Table deletion is failed...\n" + e);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
     }
 
