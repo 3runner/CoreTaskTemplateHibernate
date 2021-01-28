@@ -4,8 +4,6 @@ import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.service.UserService;
 import jm.task.core.jdbc.service.UserServiceImpl;
 
-import java.util.List;
-
 public class Main {
     public static void main(String[] args) {
         UserService userService = new UserServiceImpl();
@@ -24,10 +22,7 @@ public class Main {
         userService.saveUser(user4.getName(), user4.getLastName(), user4.getAge());
         System.out.printf("User с именем – %s добавлен в базу данных\n", user4.getName());
 
-        List<User> usersList = userService.getAllUsers();
-        for (User user : usersList) {
-            System.out.println(user);
-        }
+        userService.getAllUsers().stream().forEach(System.out::println);
 
         userService.cleanUsersTable();
         userService.dropUsersTable();
